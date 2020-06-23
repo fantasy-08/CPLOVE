@@ -1,0 +1,41 @@
+<%- include("partials/header"); -%>
+
+<header class="jumbotron">
+	<div class='container'>
+		<h1>
+		Welocome to CP ❤️!
+
+		</h1>
+		<p>
+			Got A Doubt We have solution-> Discuss
+		</p>
+	
+		<p>
+			<a class='btn btn-danger btn-large'href='/pages/new'>Post New Article</a>
+		</p>
+	</div>	
+	
+</header>
+	<div class='row text-centre' style='display:flex; flex-wrap:wrap;'>
+		<% posts.forEach(function(cg){ %>
+		<div class='col-md-3 col-sm-6'>
+			<div class="card">
+                <img src="<%= cg.image %>" class="card-img-top" alt="added by user">
+                <div class="card-body">
+                  <h5 class="card-title"><%= cg.title %></h5>
+                  <p class="card-text"><%= cg.text.substring(0,50) %></p>
+                </div>
+                <div class="card-footer">
+                  <small class="text-muted">Last updated <%=cg.date %></small>
+                  <a href='/pages/<%=cg._id%>' class='btn btn-danger text-center'>More Info</a>
+                </div>
+              </div>
+		</div>
+		<% }); %>		
+			</div>
+			
+	</div>
+
+
+<%- include("partials/footer"); -%>
+

@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+<div class='container'>
+	<div class='row'>
+		<div class='col-md-3'>
+			<p class='lead'>
+				<h1>CP ❤️</h1>
+			</p>
+			<div class='list-group'>
+				<li class='list-group-item active'><%= posts.date %></li>
+			</div>
+		</div>
+		<div class='col-md-9'>
+			<div class='thumbnail'>
+				<img class='img-responsive' src='<%=posts.image%>'>
+				<div class='caption-full'>  
+					<h4>
+						<a><%= posts.title%></a>
+					</h4>
+					<p>
+						<%= posts.text%>
+					</p>
+					<p>
+						<em>Submitted By </em><%= posts.author.username%>
+					</p>
+					<% if(currentUser && posts.author.id.equals(currentUser._id)){ %>
+                    <a href='/pages/<%= posts._id%>/edit' class='btn btn-warning'>Edit</a>
+					<form action='/pages/<%=posts._id%>?_method=DELETE' method='POST' style='display:inline;'>
+						<button class='btn btn-danger'>
+							Delete
+						</button>
+					</form>
+					<% } %>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</div>
+<%- include('../partials/footer') %>
+
+
+
