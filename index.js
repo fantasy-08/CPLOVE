@@ -122,6 +122,7 @@ app.post('/pages/new',isLoggedIn,(req,res)=>{
         date:creationdate
     });
     post.save();
+    req.flash('success','Page Added Successfully');
     res.redirect('/pages');
 })
 //EDIT PAGE
@@ -131,6 +132,7 @@ app.get('/pages/:id/edit',checkPagesOwnership,(req,res)=>{
             console.log(err);
         }
         else{
+            req.flash('success','Update Successfully');
             res.render('./Page/edit',{posts:foundPost});
         }
     });
@@ -166,7 +168,7 @@ app.delete('/pages/:id',checkPagesOwnership,(req,res)=>{
             console.log(err);
         }
         else{
-            req.flash('success','Campground Deleted !!!');
+            req.flash('success','Page Deleted !!!');
             res.redirect('/pages');
         }
     });
@@ -176,22 +178,12 @@ app.delete('/pages/:id',checkPagesOwnership,(req,res)=>{
 app.get('/login',(req,res)=>{
     res.render('login');
 })
-app.post('/login',(req,res)=>{
-    const user = new User({
-        username: req.body.username,
-        password: req.body.password
-      });
-    
-      req.login(user, function(err){
-        if (err) {
-          console.log(err);
-        } else {
-          passport.authenticate("local")(req, res, function(){
-            res.redirect("/pages");
-          });
-        }
-      });
-});
+app.post('/login',passport.authenticate('local',{
+    successRedirect:'/pages',
+    failureRedirect:'/login',
+    failureFlash: true,
+    successFlash: 'Welcome to CP!'
+}),(req,res)=>{});
 app.get('/signup',(req,res)=>{
     res.render('signup');
 })
@@ -199,17 +191,21 @@ app.post('/signup',(req,res)=>{
     User.register({username: req.body.username,fullName: req.body.fullName}, req.body.password, function(err, user){
         if (err) {
           console.log(err);
+          req.flash('danger','Invalid email or password');
           res.redirect("/signup");
         } else {
           passport.authenticate("local")(req, res, function(){
+            req.flash('success','Welcome to Family');
             res.redirect("/pages");
           });
         }
       });
 });
+
 app.get("/logout", function(req, res){
     req.logout();
-    res.redirect("/");
+    req.flash('success','Logout Successfully');
+    res.redirect("/pages");
 });
 
 //Function----------->
