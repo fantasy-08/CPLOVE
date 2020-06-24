@@ -46,6 +46,9 @@ var commentSchema = new mongoose.Schema({
 const Comment=new mongoose.model('Comment',commentSchema);
 const postSchema=new mongoose.Schema({
     title:String,
+    text:String,
+    date:String,
+    image:String,
     author:{
       id:{
         type:mongoose.Schema.Types.ObjectId,
@@ -58,10 +61,8 @@ const postSchema=new mongoose.Schema({
 			type:mongoose.Schema.Types.ObjectId,
 			ref:'Comment'
 		}
-	],
-    text:String,
-    date:String,
-    image:String
+	]
+    
 });
 
 const Post=new mongoose.model('Post',postSchema);
@@ -157,9 +158,16 @@ app.put('/pages/:id',checkPagesOwnership,(req,res)=>{
 });
 // SHOW PAGE
 app.get('/pages/:id',(req,res)=>{
-    Post.findById(req.params.id,(err,cg)=>{
-        res.render('./Page/show_page.ejs',{posts:cg});
-    });
+    Post.findById(req.params.id).populate("comments").exec((err,cg)=>{
+        if(err || !cg){
+            console.log(err);
+            req.flash('error','Sorry BAD request');
+            return res.redirect('/pages');
+        }
+        else{
+            res.render('./Page/show_page.ejs',{posts:cg});
+        }
+    })
 });
 //DELETE
 app.delete('/pages/:id',checkPagesOwnership,(req,res)=>{
@@ -173,6 +181,61 @@ app.delete('/pages/:id',checkPagesOwnership,(req,res)=>{
         }
     });
 });
+//==========================COMMENT==============================
+app.get('/pages/:id/comments/new',isLoggedIn,function(req,res){
+	Post.findById(req.params.id,(err,cmmt)=>{
+	if(err) {console.log(err);}
+	else {res.render('comments/new',{cmt:cmmt});}
+						});
+	
+});
+app.post('/pages/:id/comments',isLoggedIn,function(req,res){
+	Post.findById(req.params.id,(err,cmtPost)=>{
+		if(err){console.log(err);}
+		else{
+			Comment.create(req.body.comment,(err,comment)=>{
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    comment.author.id=req.user._id;
+                    comment.author.username=req.user.username;
+                    comment.save();
+                    cmtPost.comments.push(comment);
+                    cmtPost.save();
+                    console.log(comment);
+                    console.log(cmtPost);
+                    req.flash('success','Successfully Added Comment');
+                    res.redirect('/pages/'+cmtPost._id);
+                }
+			});
+		}
+	});
+});
+app.get('/pages/:id/comments/:commentid/edit',checkCommentOwnership,(req,res)=>{
+    Comment.findById(req.params.commentid,(err,updateComment)=>{
+        if(err) console.log(err);
+        else{
+            res.render('./Comments/edit.ejs',{post_id:req.params.id,comment:updateComment});
+        }
+    })
+});
+app.put('/pages/:id/comments/:commentid',checkCommentOwnership,(req,res)=>{
+    Comment.findByIdAndUpdate(req.params.commentid, req.body.comment, function(err, updatedComment){
+        if(err){
+            res.redirect("back");
+        } else {
+            res.redirect("/pages/" + req.params.id );
+        }
+     });
+});
+app.delete('/pages/:id/comments/:commentid',checkCommentOwnership,(req,res)=>{
+    Comment.findByIdAndRemove(req.params.commentid,(err,removed)=>{
+        if(err)console.log('error');
+        else res.redirect('/pages/'+req.params.id);
+    });
+});
+
 
 //----------------LOGIN----------------
 app.get('/login',(req,res)=>{
@@ -191,7 +254,7 @@ app.post('/signup',(req,res)=>{
     User.register({username: req.body.username,fullName: req.body.fullName}, req.body.password, function(err, user){
         if (err) {
           console.log(err);
-          req.flash('danger','Invalid email or password');
+          req.flash('error','Invalid email or password');
           res.redirect("/signup");
         } else {
           passport.authenticate("local")(req, res, function(){
@@ -208,7 +271,7 @@ app.get("/logout", function(req, res){
     res.redirect("/pages");
 });
 
-//Function----------->
+//Function/MiddleWare----------->
 function isLoggedIn(req,res,next){
 	if(req.isAuthenticated()){
 		return next();
@@ -235,6 +298,27 @@ function checkPagesOwnership(req,res,next){
             res.redirect('/pages/' + req.params.id);
         }
     })};
+
+function checkCommentOwnership(req,res,next){
+    if(req.isAuthenticated()){
+		Comment.findById(req.params.commentid,(err,foundComment)=>{
+			if(err) {req.flash('error','Database Not Found!!!');res.redirect('back');}
+			else{
+				if(foundComment.author.id.equals(req.user._id)){
+					next();
+				}
+				else{
+					req.flash('error','Permission Denied!!!');
+					res.redirect('back');
+				}
+			}
+		});
+	}
+	else{
+		req.flash('error','You Need To Be Logged In');
+		res.redirect('back');
+    }
+}
 
 const PORT=3000;//process.env.PORT;
 app.listen(PORT,console.log(`Server started on ${PORT}`));

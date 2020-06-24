@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+
+<div class='container-fluid'>
+	<h1>
+        Want a change?
+	</h1>
+	<div style="margin:25px auto; width 30%;">
+	<form action='/pages/<%= post_id %>/comments/<%= comment._id %>?_method=PUT' method='POST' class='form-inline'>
+		<div class='form-group' >
+			<input type='form-control' name='comment[text]' placeholder='Comment' class='form-control' value="<%= comment.text %>">
+		</div>
+		<button type='submit'class="btn btn-danger " >
+			Submit
+		</button>
+	</form>
+	<br><br><br>
+	<a href='/pages'class="btn btn-primary btn-lg active right" role="button">GO BACK</a>
+	</div>
+	</div>
+    
+<%- include('../partials/footer') %>

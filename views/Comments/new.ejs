@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+
+<div class='container-fluid'>
+	<h1>
+	Add new comment to <%= cmt.title %>
+	</h1>
+	<div style="margin:25px auto; width 30%;">
+	<form action='/pages/<%=cmt._id%>/comments%>' method='POST' class='form-inline'>
+		<div class='form-group' >
+			<input type='form-control' name='comment[text]' placeholder='Comment' class='form-control'>
+		</div>
+		<button type='submit'class="btn btn-danger " >
+			Submit
+		</button>
+	</form>
+	<br><br><br>
+	<a href='/pages'class="btn btn-primary btn-lg active right" role="button">GO BACK</a>
+	</div>
+	</div>
+    
+<%- include('../partials/footer') %>
