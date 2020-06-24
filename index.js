@@ -301,11 +301,11 @@ app.post('/contact',async (req,res)=>{
         text: req.body.message,
         html: '<strong>'+req.body.message+'</strong>'
       };
-      console.log(msg);
+    //   console.log(msg);
       try {
         await sgMail.send(msg);
         req.flash('success','Thank you for valuable feedback');
-        res.redirect('/');
+        res.redirect('/pages');
       } catch (error) {
         console.error(error);
      
@@ -315,6 +315,32 @@ app.post('/contact',async (req,res)=>{
         req.flash('error','Oh snap Something went wrong! Contact admin eshaan.263@gmail.com');
         res.redirect('back');
       }
+});
+//discuss----
+app.get('/discuss',(req,res)=>{
+    res.render('./coming/coming.ejs');
+});
+//----------------------------PROFILE---------------
+app.get('/user/:id',isLoggedIn,(req,res)=>{
+    User.findById(req.user._id,(err,foundUser)=>{
+        if(err){
+            req.flash('error','Some error occured cantact admin');
+            res.redirect('back');
+        }else{
+            if(foundUser){
+                Post.find({author:{id:foundUser._id,username:foundUser.username}},(err,foundPost)=>{
+                    if(err){
+                        req.flash('error','Some error occured cantact admin');
+                        res.redirect('back');
+                    }
+                    else{
+                        console.log(foundPost);
+                        res.render('./Profile/profile.ejs',{info:foundUser,posts:foundPost});
+                    }
+                }); 
+            }
+        }
+    });
 });
 //Function/MiddleWare----------->
 function isLoggedIn(req,res,next){
@@ -367,5 +393,6 @@ function checkCommentOwnership(req,res,next){
 function escapeRegex(text){
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&");
 }
+
 const PORT=3000;//process.env.PORT;
 app.listen(PORT,console.log(`Server started on ${PORT}`));
