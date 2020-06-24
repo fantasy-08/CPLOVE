@@ -133,12 +133,16 @@ app.post('/pages/new',isLoggedIn,(req,res)=>{
     var author={
 		id:req.user._id,
 		username:req.user.username
-	};
+    };
+    var images=req.body.image;
+    if(images.length<1){
+        images='https://cdn.impactinit.com/cdn/x/x@6e979ab10c/smss52/smsimg30/pv/isignstockcontributors/iss_19617_00561.jpg'
+    }
     const post=new Post({
         title:req.body.title,
         text:req.body.text,
         author:author,
-        image:req.body.image,
+        image:images,
         date:creationdate
     });
     post.save();

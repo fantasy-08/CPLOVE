@@ -6,13 +6,43 @@
         <link rel="stylesheet" href="/stylesheets/landing.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js" type="text/javascript" async></script>
     </head>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&family=Nanum+Gothic+Coding:wght@700&display=swap');
+             .typewriter h1 {
+               
+              color: #fff;
+              font-family: 'Dancing Script', cursive;
+              font-size: 5em;
+              overflow: hidden; /* Ensures the content is not revealed until the animation */
+              border-right: .15em solid orange; /* The typwriter cursor */
+              white-space: nowrap; /* Keeps the content on a single line */
+              margin: .5em auto; /* Gives that scrolling effect as the typing happens */
+              letter-spacing: .15em; /* Adjust as needed */
+              animation: 
+                typing 3.5s steps(30, end),
+                blink-caret .5s step-end infinite;
+            }
+
+            /* The typing effect */
+            @keyframes typing {
+              from { width: 0 }
+              to { width: 100% }
+            }
+
+            /* The typewriter cursor effect */
+            @keyframes blink-caret {
+              from, to { border-color: transparent }
+              50% { border-color: rgb(36, 241, 146) }
+            }
+    </style>
     <body>
     
     <div class="container">
     
     <div id="landing-header">
- 		<h1>Welcome to CP ❤️!</h1>
-    <a href="/pages" class="btn btn-lg btn-success">View All Pages</a>
+      <div class="typewriter"><h1>Welcome to CP ❤️!</h1></div>
+ 		
+    <a href="/pages" class="btn btn-lg btn-success" style="margin: .3em;">View All Pages</a>
     <form action="/pages" method="GET" class="form-inline" style="margin-top:1em">
       <div class="form-group">
         <input type="text" name="search" placeholder="Pages search..." class="form-control">
