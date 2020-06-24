@@ -11,7 +11,9 @@ const passportLocalMongoose  = require("passport-local-mongoose");
 const findOrCreate           = require('mongoose-findorcreate');
 const flash                  = require('connect-flash');
 const app                    = express();
+const sgMail = require('@sendgrid/mail');
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 //PASSPORT
 app.use(require('express-session')({
 	secret:'hi there',
@@ -92,17 +94,34 @@ app.get('/',(req,res)=>{
 
 //----------PAGES----------------
 app.get('/pages',(req,res)=>{
-    // console.log(req.user);
-    Post.find({},(err,foundPost)=>{
-        if(err){
-            console.log(err);
-        }
-        else{
-            if(foundPost){
-                res.render('pages',{posts:foundPost});
+    var noMatch=null;
+    if(req.query.search){
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        Post.find({title:regex},(err,foundPost)=>{
+            if(foundPost.length<1){
+                noMatch="No result found!"
             }
-        }
-    });
+            if(err){
+                console.log(err);
+            }
+            else{
+                if(foundPost){
+                    res.render('pages',{posts:foundPost,noMatch:noMatch});
+                }
+            }
+        });
+    }else{
+        Post.find({},(err,foundPost)=>{
+            if(err){
+                console.log(err);
+            }
+            else{
+                if(foundPost){
+                    res.render('pages',{posts:foundPost,noMatch:noMatch});
+                }
+            }
+        });
+    }
 });
 // NEW PAGE
 app.get('/pages/new',isLoggedIn,(req,res)=>{
@@ -270,7 +289,33 @@ app.get("/logout", function(req, res){
     req.flash('success','Logout Successfully');
     res.redirect("/pages");
 });
-
+//Contact
+app.get('/contact',isLoggedIn,(req,res)=>{
+    res.render('contact.ejs')
+});
+app.post('/contact',async (req,res)=>{
+    const msg = {
+        to:    req.body.email,
+        from: 'smartchuza@gmail.com',
+        subject: 'Feedback CPLove from '+req.body.name,
+        text: req.body.message,
+        html: '<strong>'+req.body.message+'</strong>'
+      };
+      console.log(msg);
+      try {
+        await sgMail.send(msg);
+        req.flash('success','Thank you for valuable feedback');
+        res.redirect('/');
+      } catch (error) {
+        console.error(error);
+     
+        if (error.response) {
+          console.error(error.response.body)
+        }
+        req.flash('error','Oh snap Something went wrong! Contact admin eshaan.263@gmail.com');
+        res.redirect('back');
+      }
+});
 //Function/MiddleWare----------->
 function isLoggedIn(req,res,next){
 	if(req.isAuthenticated()){
@@ -319,6 +364,8 @@ function checkCommentOwnership(req,res,next){
 		res.redirect('back');
     }
 }
-
+function escapeRegex(text){
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&");
+}
 const PORT=3000;//process.env.PORT;
 app.listen(PORT,console.log(`Server started on ${PORT}`));

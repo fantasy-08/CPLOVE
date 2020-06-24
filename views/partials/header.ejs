@@ -31,12 +31,18 @@
           </li>
         </ul>
         <ul class="navbar-nav mr-auto">
+          <form action="/pages" method="GET" class="form-inline">
+            <div class="form-group">
+              <input type="text" name="search" placeholder="Pages search..." class="form-control">
+              <input type="submit" value="Search" class="btn btn-outline-success" style="margin-left:.3em">
+            </div>
+          </form>
           <% if(!currentUser){ %>
             <li class="nav-item">
               <a class="nav-link" href="/login">Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/signup">signup</a>
+              <a class="nav-link" href="/signup">Signup</a>
             </li>
           <% }else{ %>
             <li class="nav-item">

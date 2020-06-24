@@ -17,6 +17,19 @@
 	
 </header>
 	<div class='row text-centre' style='display:flex; flex-wrap:wrap;'>
+		<% if(noMatch!==null){ %>
+			<div class="col-md-12 text-centre">
+				<h1><%= noMatch %></h1>
+			</div>
+			<p>
+				<form action="/pages" method="GET" class="form-inline">
+					<div class="form-group">
+					  <input type="text" name="search" placeholder="Pages search..." class="form-control">
+					  <input type="submit" value="Search" class="btn btn-outline-success" style="margin-left:.3em">
+					</div>
+				  </form>
+			</p>			
+		<% } %>
 		<% posts.forEach(function(cg){ %>
 		<div class='col-md-3 col-sm-6'>
 			<div class="card">
