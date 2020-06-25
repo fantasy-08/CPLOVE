@@ -23,7 +23,7 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect('mongodb+srv://smartchuza:smartchuza@cluster0-n4ee0.mongodb.net/test?retryWrites=true&w=majority',{useNewUrlParser:true ,useUnifiedTopology: true })
+mongoose.connect(process.env.DBURL,{useNewUrlParser:true ,useUnifiedTopology: true })
     .then(()=>console.log('DB CONNECTED...'))
     .catch(err=> console.log(err));
 
@@ -408,4 +408,6 @@ function escapeRegex(text){
 }
 
 const PORT=process.env.PORT || 3000;//process.env.PORT;
-app.listen(PORT,console.log(`Server started on ${PORT}`));
+app.listen(PORT,process.env.IP,()=>{
+    console.log(`Server started on ${PORT}`);
+});
