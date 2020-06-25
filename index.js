@@ -373,7 +373,7 @@ function checkPagesOwnership(req,res,next){
             req.flash('error', 'Sorry, that campground does not exist!');
             res.redirect('/pages');
         }
-        else if(foundPost.author.id.equals(req.user._id)){
+        else if(foundPost.author.id.equals(req.user._id) || req.user.isAdmin){
             req.post=foundPost;
             next();
         }
@@ -388,7 +388,7 @@ function checkCommentOwnership(req,res,next){
 		Comment.findById(req.params.commentid,(err,foundComment)=>{
 			if(err) {req.flash('error','Database Not Found!!!');res.redirect('back');}
 			else{
-				if(foundComment.author.id.equals(req.user._id)){
+				if(foundComment.author.id.equals(req.user._id) || req.user.isAdmin==true){
 					next();
 				}
 				else{
