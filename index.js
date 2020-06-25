@@ -276,7 +276,14 @@ app.get('/signup',(req,res)=>{
     res.render('signup');
 })
 app.post('/signup',(req,res)=>{
-    User.register({username: req.body.username,fullName: req.body.fullName}, req.body.password, function(err, user){
+    var newUser={
+        username: req.body.username,fullName: req.body.fullName,isAdmin:false
+    }
+    if(req.body.secretCode === 'iamAdimn'){
+        newUser.isAdmin=true;
+        console.log(newUser);
+    }
+    User.register(newUser, req.body.password, function(err, user){
         if (err) {
           console.log(err);
           req.flash('error','Invalid email or password');
