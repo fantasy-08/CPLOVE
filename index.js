@@ -210,7 +210,7 @@ app.delete('/pages/:id',checkPagesOwnership,(req,res)=>{
 app.get('/pages/:id/comments/new',isLoggedIn,function(req,res){
 	Post.findById(req.params.id,(err,cmmt)=>{
 	if(err) {console.log(err);}
-	else {res.render('comments/new',{cmt:cmmt});}
+	else {res.render('Comments/new',{cmt:cmmt});}
 						});
 	
 });
