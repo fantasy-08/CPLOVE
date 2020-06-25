@@ -70,7 +70,9 @@ const postSchema=new mongoose.Schema({
 const Post=new mongoose.model('Post',postSchema);
 const userSchema=new mongoose.Schema({
     username:String,
-    password:String
+    password:String,
+    fullName:String,
+    isAdmin:Boolean
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -281,7 +283,7 @@ app.post('/signup',(req,res)=>{
           res.redirect("/signup");
         } else {
           passport.authenticate("local")(req, res, function(){
-            req.flash('success','Welcome to Family');
+            req.flash('success','Welcome to Family '+user.fullName);
             res.redirect("/pages");
           });
         }

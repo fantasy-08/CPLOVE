@@ -22,7 +22,7 @@
 					<p>
 						<em>Submitted By </em><%= posts.author.username%>
 					</p>
-					<% if(currentUser && posts.author.id.equals(currentUser._id)){ %>
+					<% if(currentUser && (posts.author.id.equals(currentUser._id) || currentUser.isAdmin==true)){ %>
                     <a href='/pages/<%= posts._id%>/edit' class='btn btn-warning'>Edit</a>
 					<form action='/pages/<%=posts._id%>?_method=DELETE' method='POST' style='display:inline;'>
 						<button class='btn btn-danger'>
@@ -45,7 +45,7 @@
 								<p>
 									<%= comment.text %>
 								</p>
-								<% if(currentUser && comment.author.id.equals(currentUser._id)){ %>
+								<% if(currentUser && (comment.author.id.equals(currentUser._id) || currentUser.isAdmin==true)){ %>
 									<div class="pull-right">
 									  <a href="/pages/<%=posts._id%>/comments/<%=comment._id%>/edit" class="btn btn-xs btn-outline-warning">EDIT</a>
 									  <form class="delete-form" action="/pages/<%=posts._id%>/comments/<%=comment._id%>?_method=DELETE" method="POST">
