@@ -30,7 +30,7 @@ Dillinger uses a number of open source projects to work properly:
 * MongoDB -  Database
 * Mongoose to connect to DB(MongoDB Atlas)
 
-And of course CP ❤️ itself is open source with a [https://github.com/fantasy-08/CPLOVE] on GitHub.
+And of course CP ❤️ itself is open source with a [Repository] on GitHub.
 
 ### Installation
 
@@ -71,4 +71,5 @@ MIT
 
    [node.js]: <http://nodejs.org>
    [express]: <http://expressjs.com>
+   [Repository]:<https://github.com/fantasy-08/CPLOVE>
 
