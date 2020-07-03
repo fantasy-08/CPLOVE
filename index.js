@@ -451,7 +451,7 @@ function escapeRegex(text){
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&");
 }
 
-const PORT= 3000 || process.env.PORT;//process.env.PORT;
+const PORT= process.env.PORT;//process.env.PORT;
 server.listen(PORT,process.env.IP,()=>{
     console.log(`Server started on ${PORT}`);
 });
