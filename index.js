@@ -1,7 +1,9 @@
 require('dotenv').config();
+const http                   = require('http');
 const express                = require("express");
 const bodyParser             = require("body-parser");
 const ejs                    = require("ejs");
+const socketio                    = require("socket.io");
 const mongoose               = require("mongoose");
 const session                = require('express-session');
 const passport               = require("passport");
@@ -10,9 +12,12 @@ const LocalStrategy          = require("passport-local");
 const passportLocalMongoose  = require("passport-local-mongoose");
 const findOrCreate           = require('mongoose-findorcreate');
 const flash                  = require('connect-flash');
+const formatMessage =require('./utils/messages');
+const {userJoin,getCurrentUser,getRoomUsers,userLeave} =require('./utils/users');
 const app                    = express();
 const sgMail = require('@sendgrid/mail');
-
+const server =http.createServer(app);
+const io=socketio(server);
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 //PASSPORT
 app.use(require('express-session')({
@@ -88,7 +93,39 @@ app.use((req,res,next)=>{
 	res.locals.success=req.flash('success');
 	next();
 });
+const BotName='@AdminEshaan';
+io.on('connection',socket=>{
+    socket.on('joinRoom',({username,room})=>{
+        const user=userJoin(socket.id,username,room);
+        socket.join(user.room);
 
+        socket.emit('message',formatMessage(BotName,'Welcome to CPLove Discuss!'));
+
+        //new connectiom
+        socket.broadcast.to(user.room).emit('message',formatMessage(BotName,`${user.username} just joined the chat`));
+        io.to(user.room).emit('roomUsers',{
+            room:user.room,
+            users:getRoomUsers(user.room)
+        });
+    });
+    socket.on('chatMessage',(msg)=>{
+        const user=getCurrentUser(socket.id);
+        io.to(user.room).emit('message',formatMessage(user.username,msg));
+    });
+    socket.on('disconnect',()=>{
+        const user=userLeave(socket.id);
+        if(user){
+            io.to(user.room).emit('message',formatMessage(BotName,`${user.username} just left the chat`));
+            io.to(user.room).emit('roomUsers',{
+                room:user.room,
+                users:getRoomUsers(user.room)
+            });
+        }
+        
+    });
+
+
+})
 //--------------HOME------
 app.get('/',(req,res)=>{
     res.render('home');
@@ -330,9 +367,9 @@ app.post('/contact',async (req,res)=>{
       }
 });
 //discuss----
-app.get('/discuss',(req,res)=>{
-    res.render('./coming/coming.ejs');
-});
+// app.get('/discuss',(req,res)=>{
+//     res.render('./coming/coming.ejs');
+// });
 //----------------------------PROFILE---------------
 app.get('/user/:id',isLoggedIn,(req,res)=>{
     User.findById(req.user._id,(err,foundUser)=>{
@@ -354,6 +391,13 @@ app.get('/user/:id',isLoggedIn,(req,res)=>{
             }
         }
     });
+});
+// -----------DISCUSS------------------------------
+app.get('/discuss',(req,res)=>{
+    res.render('./Discuss/index');
+});
+app.get('/chat',(req,res)=>{
+    res.render('./Discuss/chat');
 });
 //Function/MiddleWare----------->
 function isLoggedIn(req,res,next){
@@ -407,7 +451,7 @@ function escapeRegex(text){
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&");
 }
 
-const PORT=process.env.PORT || 3000;//process.env.PORT;
-app.listen(PORT,process.env.IP,()=>{
+const PORT= 3000 || process.env.PORT;//process.env.PORT;
+server.listen(PORT,process.env.IP,()=>{
     console.log(`Server started on ${PORT}`);
 });

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node index.js"
+    "start": "node index.js"
   },
   "author": "Eshaan",
   "license": "ISC",
@@ -19,12 +19,14 @@
     "express-session": "^1.17.1",
     "mangodb": "^1.0.0",
     "method-override": "^3.0.0",
+    "moment": "^2.27.0",
     "mongoose": "^5.9.20",
     "mongoose-findorcreate": "^3.0.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^6.0.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
