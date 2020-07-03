@@ -1,6 +1,6 @@
 # CP ❤️
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+[![Build Status](https://murmuring-mesa-21077.herokuapp.com/)
 
 CP ❤️ is made for programmers, mobile-ready, NodeJS powered HTML5  website
 
